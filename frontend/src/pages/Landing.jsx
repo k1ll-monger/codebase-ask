@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const API = "http://54.89.190.40:8000";
+const API = "https://codebase-ask-render.onrender.com";
 
 const PRELOADED = [
   {

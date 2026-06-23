@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-const API = "http://54.89.190.40:8000";
+const API = "https://codebase-ask-render.onrender.com";
 
 function SourceBadge({ source }) {
   const label = source.class_name
