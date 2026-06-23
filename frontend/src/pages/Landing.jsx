@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const API = "http://54.209.177.233:8000";
+const API = "http://54.89.190.40:8000";
 
 const PRELOADED = [
   {
