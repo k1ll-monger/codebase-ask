@@ -1,0 +1,6 @@
+.env
+venv/
+temp_repo/
+__pycache__/
+frontend/node_modules
+chroma_db
