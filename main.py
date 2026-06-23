@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
+import time
 
 from clone_repo import clone_repository, find_python_files
 from chunker import extract_chunks_from_file
@@ -88,10 +89,13 @@ def index_repo(request: IndexRequest):
 
         # step 4: embed all chunks
         all_embeddings = []
-        for chunk in all_chunks:
+        for i, chunk in enumerate(all_chunks):
             embedding = embed_text(chunk["text"])
             all_embeddings.append(embedding)
-
+            # stay under 100 requests/minute free tier limit
+            if (i + 1) % 90 == 0:
+                print(f"Pausing to avoid rate limit... ({i+1} chunks done)")
+                time.sleep(65) 
         # step 5: store in chroma
         collection = get_or_create_collection(chroma_client, request.repo_name)
         store_chunks(collection, all_chunks, all_embeddings)
