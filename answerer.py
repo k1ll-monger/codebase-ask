@@ -53,7 +53,7 @@ def get_answer(question, retrieved_chunks):
     prompt = build_prompt(question, retrieved_chunks)
 
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.0-flash-001",
         contents=prompt,
     )
 
