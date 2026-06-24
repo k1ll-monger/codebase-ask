@@ -8,17 +8,15 @@ from clone_repo import clone_repository, find_python_files
 from chunker import extract_chunks_from_file
 from embedder import embed_text
 from vector_store import (
-    get_chroma_client,
     get_or_create_collection,
     store_chunks,
     query_collection,
+    list_repos,
 )
 from answerer import get_answer
 
 app = FastAPI()
 
-# CORS — allows our frontend (running on a different port)
-# to make requests to this backend without the browser blocking it
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,13 +24,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# one shared Chroma client for the whole app lifetime
-chroma_client = get_chroma_client()
-
 
 # --- request/response models ---
-# Pydantic models define the shape of data coming in and going out
-# FastAPI uses these to automatically validate incoming requests
 
 class IndexRequest(BaseModel):
     repo_url: str
@@ -52,22 +45,20 @@ class ChatResponse(BaseModel):
 # --- endpoints ---
 
 @app.get("/repos")
-def list_repos():
+def get_repos():
     """
     Returns all repo names that have already been indexed.
-    Chroma stores each repo as a separate collection,
-    so we just list all existing collections.
+    Reads namespaces from Pinecone index stats.
     """
-    collections = chroma_client.list_collections()
-    repo_names = [col.name for col in collections]
-    return {"repos": repo_names}
+    repos = list_repos()
+    return {"repos": repos}
 
 
 @app.post("/index")
 def index_repo(request: IndexRequest):
     """
     Clones a repo, chunks its Python files, embeds each chunk,
-    and stores everything in Chroma under the given repo name.
+    and stores everything in Pinecone under the repo's namespace.
     """
     try:
         # step 1: clone
@@ -92,13 +83,13 @@ def index_repo(request: IndexRequest):
         for i, chunk in enumerate(all_chunks):
             embedding = embed_text(chunk["text"])
             all_embeddings.append(embedding)
-            # stay under 100 requests/minute free tier limit
             if (i + 1) % 90 == 0:
                 print(f"Pausing to avoid rate limit... ({i+1} chunks done)")
-                time.sleep(65) 
-        # step 5: store in chroma
-        collection = get_or_create_collection(chroma_client, request.repo_name)
-        store_chunks(collection, all_chunks, all_embeddings)
+                time.sleep(65)
+
+        # step 5: store in pinecone
+        namespace = get_or_create_collection(repo_name=request.repo_name)
+        store_chunks(namespace, all_chunks, all_embeddings)
 
         return {
             "status": "success",
@@ -117,25 +108,24 @@ def chat(request: ChatRequest):
     retrieves relevant chunks, and returns a grounded answer.
     """
     # check the repo has actually been indexed
-    collections = chroma_client.list_collections()
-    collection_names = [col.name for col in collections]
-
+    indexed_repos = list_repos()
     safe_name = request.repo_name.replace("/", "-").replace("_", "-").lower()
-    if safe_name not in collection_names:
+
+    if safe_name not in indexed_repos and request.repo_name not in indexed_repos:
         raise HTTPException(
             status_code=404,
             detail=f"Repo '{request.repo_name}' has not been indexed yet"
         )
 
-    collection = get_or_create_collection(chroma_client, request.repo_name)
+    namespace = get_or_create_collection(repo_name=request.repo_name)
 
     # embed the question
     question_embedding = embed_text(request.question)
 
     # retrieve relevant chunks
-    results = query_collection(collection, question_embedding, n_results=4)
+    results = query_collection(namespace, question_embedding, n_results=5)
 
-    # build sources list for the frontend to display citations
+    # build sources list
     sources = []
     for i in range(len(results["documents"][0])):
         meta = results["metadatas"][0][i]
