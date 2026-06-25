@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 const API = "https://codebase-ask-render.onrender.com";
 
 function SourceBadge({ source }) {
-  console.log("source:", source);
+  
   const [expanded, setExpanded] = useState(false);
   const label = source.class_name
     ? `${source.class_name}.${source.label}`
