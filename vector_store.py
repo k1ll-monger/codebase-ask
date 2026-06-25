@@ -29,11 +29,14 @@ def store_chunks(collection, chunks, embeddings):
         # Pinecone doesn't allow certain characters in IDs
         safe_id = chunk_id.replace("\\", "/").replace(" ", "_")
 
+        # strip the temp_repo prefix for clean display
+        clean_path = chunk["file_path"].replace("temp_repo\\", "").replace("temp_repo/", "")
+
         vectors.append({
             "id": safe_id,
             "values": embeddings[i],
             "metadata": {
-                "file_path": chunk["file_path"],
+                "file_path": clean_path,
                 "name": chunk["name"],
                 "class_name": chunk["class_name"] if chunk["class_name"] else "",
                 "type": chunk["type"],

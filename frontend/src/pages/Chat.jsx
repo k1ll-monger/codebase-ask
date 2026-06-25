@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
 const API = "https://codebase-ask-render.onrender.com";
 
@@ -56,14 +57,26 @@ function Message({ msg }) {
       }}>
         {isUser ? "YOU" : "AI"}
       </div>
-      <div style={{ flex: 1 }}>
-        <div style={{
-          fontSize: 15, color: isUser ? "#cccccc" : "#e0e0e0",
-          lineHeight: 1.75, whiteSpace: "pre-wrap",
-          marginBottom: msg.sources && msg.sources.length > 0 ? 16 : 0,
-        }}>
-          {msg.content}
-        </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {isUser ? (
+          <div style={{
+            fontSize: 15, color: "#cccccc",
+            lineHeight: 1.75, whiteSpace: "pre-wrap",
+            marginBottom: msg.sources && msg.sources.length > 0 ? 16 : 0,
+          }}>
+            {msg.content}
+          </div>
+        ) : (
+          <div style={{
+            fontSize: 15, color: "#e0e0e0",
+            lineHeight: 1.75,
+            marginBottom: msg.sources && msg.sources.length > 0 ? 16 : 0,
+          }}
+          className="ai-message"
+          >
+            <ReactMarkdown>{msg.content}</ReactMarkdown>
+          </div>
+        )}
         {msg.sources && msg.sources.length > 0 && (
           <div>
             <div style={{ fontSize: 10, fontWeight: 500, color: "#3a3a3a", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: 8 }}>
@@ -92,7 +105,7 @@ function Message({ msg }) {
 export default function Chat({ repoName, onBack }) {
   const [messages, setMessages] = useState([{
     role: "assistant",
-    content: `Codebase indexed. Ask anything about ${repoName} — I'll cite the exact file and function my answer comes from.`,
+    content: `Codebase indexed. Ask anything about **${repoName}** — I'll cite the exact file and function my answer comes from.`,
     sources: [],
   }]);
   const [input, setInput] = useState("");
@@ -204,6 +217,46 @@ export default function Chat({ repoName, onBack }) {
         .back-btn:hover { border-color: #4b4b4d !important; color: #ffffff !important; transform: translateX(-3px); }
         .back-btn:active { transform: translateX(-1px); }
         input::placeholder { color: #2a2a2a; }
+
+        /* markdown styling for AI messages */
+        .ai-message p { margin: 0 0 12px; }
+        .ai-message p:last-child { margin-bottom: 0; }
+        .ai-message strong { color: #ffffff; font-weight: 600; }
+        .ai-message em { color: #9e9ea0; font-style: italic; }
+        .ai-message ul, .ai-message ol { padding-left: 20px; margin: 0 0 12px; }
+        .ai-message li { margin-bottom: 6px; }
+        .ai-message code {
+          background: #1a1a1a;
+          border: 1px solid #2a2a2a;
+          border-radius: 4px;
+          padding: 1px 6px;
+          font-size: 13px;
+          font-family: 'SF Mono', 'Fira Code', monospace;
+          color: #e0e0e0;
+        }
+        .ai-message pre {
+          background: #141414;
+          border: 1px solid #2a2a2a;
+          border-radius: 8px;
+          padding: 16px;
+          overflow-x: auto;
+          margin: 0 0 12px;
+        }
+        .ai-message pre code {
+          background: none;
+          border: none;
+          padding: 0;
+          font-size: 13px;
+        }
+        .ai-message h1, .ai-message h2, .ai-message h3 {
+          color: #ffffff;
+          font-weight: 600;
+          margin: 16px 0 8px;
+        }
+        .ai-message h1 { font-size: 18px; }
+        .ai-message h2 { font-size: 16px; }
+        .ai-message h3 { font-size: 15px; }
+        .ai-message a { color: #9e9ea0; text-decoration: underline; }
       `}</style>
 
       {/* Nav */}
