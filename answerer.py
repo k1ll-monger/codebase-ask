@@ -36,8 +36,10 @@ Answer the question in simple, plain English. Avoid jargon where possible.
 Structure your answer so a developer new to this codebase can understand it easily.
 Use short paragraphs or bullet points — whichever is clearer for the specific question.
 If you reference a function or class, mention its name naturally in the explanation.
-At the end, briefly mention which files your answer is based on.
+Do not list source files at the end of your answer — they are shown separately in the UI.
 Do not reproduce large blocks of code unless absolutely necessary to answer the question.
+
+
 
 ## Relevant code snippets:
 {context_string}

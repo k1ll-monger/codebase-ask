@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
-import time
+
 
 from clone_repo import clone_repository, find_python_files
 from chunker import extract_chunks_from_file
@@ -83,9 +83,6 @@ def index_repo(request: IndexRequest):
         for i, chunk in enumerate(all_chunks):
             embedding = embed_text(chunk["text"])
             all_embeddings.append(embedding)
-            if (i + 1) % 90 == 0:
-                print(f"Pausing to avoid rate limit... ({i+1} chunks done)")
-                time.sleep(65)
 
         # step 5: store in pinecone
         namespace = get_or_create_collection(repo_name=request.repo_name)
