@@ -4,33 +4,61 @@ import ReactMarkdown from "react-markdown";
 const API = "https://codebase-ask-render.onrender.com";
 
 function SourceBadge({ source }) {
+  const [expanded, setExpanded] = useState(false);
   const label = source.class_name
     ? `${source.class_name}.${source.label}`
     : source.label;
+
   return (
-    <div style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 6,
-      background: "#141414",
-      border: "1px solid #2a2a2a",
-      borderRadius: 9999,
-      padding: "4px 12px",
-      fontSize: 12,
-      color: "#9e9ea0",
-      fontWeight: 500,
-      marginRight: 6,
-      marginBottom: 6,
-      transition: "border-color 0.15s, color 0.15s",
-      cursor: "default",
-    }}
-    onMouseEnter={e => { e.currentTarget.style.borderColor = "#4b4b4d"; e.currentTarget.style.color = "#ffffff"; }}
-    onMouseLeave={e => { e.currentTarget.style.borderColor = "#2a2a2a"; e.currentTarget.style.color = "#9e9ea0"; }}
-    >
-      <span style={{ color: "#3a3a3a", fontSize: 11 }}>↗</span>
-      <span>{label}</span>
-      <span style={{ color: "#3a3a3a" }}>·</span>
-      <span style={{ color: "#3a3a3a", fontSize: 11 }}>L{source.start_line}</span>
+    <div style={{ marginRight: 6, marginBottom: 6 }}>
+      {/* badge pill */}
+      <div
+        onClick={() => setExpanded(e => !e)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          background: expanded ? "#1f1f1f" : "#141414",
+          border: `1px solid ${expanded ? "#4b4b4d" : "#2a2a2a"}`,
+          borderRadius: expanded ? "8px 8px 0 0" : 9999,
+          padding: "4px 12px",
+          fontSize: 12,
+          color: expanded ? "#ffffff" : "#9e9ea0",
+          fontWeight: 500,
+          transition: "border-color 0.15s, color 0.15s, background 0.15s",
+          cursor: "pointer",
+          userSelect: "none",
+        }}
+        onMouseEnter={e => { if (!expanded) { e.currentTarget.style.borderColor = "#4b4b4d"; e.currentTarget.style.color = "#ffffff"; }}}
+        onMouseLeave={e => { if (!expanded) { e.currentTarget.style.borderColor = "#2a2a2a"; e.currentTarget.style.color = "#9e9ea0"; }}}
+      >
+        <span style={{ color: expanded ? "#9e9ea0" : "#3a3a3a", fontSize: 11 }}>↗</span>
+        <span>{label}</span>
+        <span style={{ color: "#3a3a3a" }}>·</span>
+        <span style={{ color: "#3a3a3a", fontSize: 11 }}>L{source.start_line}</span>
+        <span style={{ color: "#4b4b4d", fontSize: 10, marginLeft: 2 }}>{expanded ? "▲" : "▼"}</span>
+      </div>
+
+      {/* expanded code block */}
+      {expanded && (
+        <div style={{
+          background: "#141414",
+          border: "1px solid #4b4b4d",
+          borderTop: "none",
+          borderRadius: "0 0 8px 8px",
+          padding: "12px 16px",
+          fontSize: 12,
+          fontFamily: "'SF Mono', 'Fira Code', monospace",
+          color: "#e0e0e0",
+          whiteSpace: "pre-wrap",
+          overflowX: "auto",
+          maxHeight: 300,
+          overflowY: "auto",
+          lineHeight: 1.6,
+        }}>
+          {source.code || "Code not available"}
+        </div>
+      )}
     </div>
   );
 }

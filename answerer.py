@@ -29,11 +29,15 @@ def build_prompt(question, retrieved_chunks):
 
     context_string = "\n\n".join(context_blocks)
 
-    prompt = f"""You are a helpful assistant that answers questions about a codebase.
-You will be given relevant code snippets retrieved from the codebase, and a question.
-Answer the question based ONLY on the provided code snippets.
-If the answer cannot be determined from the snippets, say so clearly.
-Always cite which file and function your answer comes from.
+    prompt = f"""You are a helpful assistant that explains code to developers.
+You will be given relevant code snippets from a codebase, and a question about it.
+
+Answer the question in simple, plain English. Avoid jargon where possible.
+Structure your answer so a developer new to this codebase can understand it easily.
+Use short paragraphs or bullet points — whichever is clearer for the specific question.
+If you reference a function or class, mention its name naturally in the explanation.
+At the end, briefly mention which files your answer is based on.
+Do not reproduce large blocks of code unless absolutely necessary to answer the question.
 
 ## Relevant code snippets:
 {context_string}

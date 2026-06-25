@@ -138,6 +138,7 @@ def chat(request: ChatRequest):
             "file_path": meta["file_path"],
             "start_line": meta["start_line"],
             "end_line": meta["end_line"],
+            "code": results["documents"][0][i],
         })
 
     # generate answer
