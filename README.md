@@ -1,6 +1,6 @@
 # Codebase.Ask
 
-Ask questions about any Python codebase in plain English. Get answers grounded in actual code — with file and function citations.
+Ask questions about any Python codebase in plain English. Get answers grounded in actual code with file and function citations.
 
 **Live demo**: [codebase-ask.vercel.app](https://codebase-ask.vercel.app)
 
@@ -14,7 +14,7 @@ Paste a GitHub repo URL. The app clones it, parses every Python file, and builds
 - "What are the main classes and what do they do?"
 - "How does error handling work?"
 
-Answers are grounded exclusively in the actual codebase — not the model's general knowledge — and cite the specific file and function they came from.
+Answers are grounded exclusively in the actual codebase not the model's general knowledge and cite the specific file and function they came from.
 
 ---
 
@@ -40,7 +40,7 @@ Embed question → similarity search in Pinecone → retrieve top 5 chunks
 Send retrieved chunks + question to Gemini → grounded answer
 ```
 
-The key design decision is **AST-based chunking** — instead of splitting code by word count (which cuts functions in half), the app parses Python syntax trees to split at function and class boundaries. Each chunk is one complete, meaningful unit of code. Methods are tagged with their parent class name so citations show `ClassName.method_name` rather than just `method_name`.
+The key design decision is **AST-based chunking** instead of splitting code by word count (which cuts functions in half), the app parses Python syntax trees to split at function and class boundaries. Each chunk is one complete, meaningful unit of code. Methods are tagged with their parent class name so citations show `ClassName.method_name` rather than just `method_name`.
 
 ---
 
