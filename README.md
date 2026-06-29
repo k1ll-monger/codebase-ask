@@ -3,6 +3,7 @@
 Ask questions about any Python codebase in plain English. Get answers grounded in actual code with file and function citations.
 
 **Live demo**: [codebase-ask.vercel.app](https://codebase-ask.vercel.app)
+( The backend is hosted on Render's free tier, which spins down after periods of inactivity. The first request may take 20–30 seconds to wake it up the subsequent requests will be fast.)
 
 ---
 
